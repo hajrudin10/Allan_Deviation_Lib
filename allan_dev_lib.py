@@ -20,7 +20,7 @@ class freq_count_to_AD:
         allan_df.to_csv(filename+"_Allan_dev.csv")
      
         
-#***************Calls that converts the ZI txt into allan deviation******************     
+#***************Calls that converts the ZI txt into allan deviation driven as a PLL******************     
 class ZI_to_AD:
     def __init__(self, filename, k):
         data = pd.read_csv(filename, delimiter="; ", header=5, names=["Time", "Amplitude"], engine='python')
@@ -28,9 +28,16 @@ class ZI_to_AD:
         self.sampling_rate = 1/abs(data["Time"][1]-data["Time"][0])
         self.tau = ( np.exp( np.log(len(self.raw_data)/2)/k )**range(k) )/self.sampling_rate
     
-    def allan_dev(self):
-        (self.allan_tau, self.allan_val_raw, _, _) = allantools.oadev(self.raw_data, rate=self.sampling_rate, data_type="freq", taus=self.tau)
-        self.allan_val = self.allan_val_raw/np.mean(self.raw_data)
+    def allan_dev(self, data_type,f_0):
+        if data_type=="freq":
+            (self.allan_tau, self.allan_val_raw, _, _) = allantools.oadev(self.raw_data, rate=self.sampling_rate, data_type="freq", taus=self.tau)
+            self.allan_val = self.allan_val_raw/np.mean(self.raw_data)
+        elif data_type=="phase":
+            self.freq_data = np.gradient(np.unwrap(np.deg2rad(self.raw_data)), 1/self.sampling_rate)
+            (self.allan_tau, self.allan_val_raw, _, _) = allantools.oadev(self.freq_data, rate=self.sampling_rate, data_type="freq", taus=self.tau)
+            self.allan_val = self.allan_val_raw/(np.mean(self.raw_data)+f_0)
+        else:
+            print("False datatype")
     
     def save_data(self,filename):
         allan_df =pd.DataFrame({'tau':self.allan_tau, 'adev':self.allan_val})
