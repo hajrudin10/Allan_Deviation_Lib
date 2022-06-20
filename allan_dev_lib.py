@@ -8,7 +8,7 @@ class freq_count_to_AD:
     def __init__(self, filename, sampling_rate, k):
         self.sampling_rate = sampling_rate
         data = pd.read_csv(filename, delimiter=",", header=1, names=["Amplitude"], engine='python')
-        self.raw_data = data["Amplitude"].values.tolist()
+        self.raw_data = data["Amplitude"].to_numpy()
         self.raw_time = np.arange(0,len(self.raw_data))/self.sampling_rate
         self.tau = ( np.exp( np.log(len(self.raw_data)/2)/k )**range(k) )/sampling_rate
     
@@ -25,8 +25,8 @@ class freq_count_to_AD:
 class ZI_to_AD:
     def __init__(self, filename, k):
         data = pd.read_csv(filename, delimiter="; ", header=5, names=["Time", "Amplitude"], engine='python')
-        self.raw_data = data["Amplitude"].values.tolist()
-        self.raw_time = data["Time"].values.tolist()
+        self.raw_data = data["Amplitude"].to_numpy()
+        self.raw_time = data["Time"].to_numpy()
         self.sampling_rate = 1/abs(data["Time"][1]-data["Time"][0])
         self.tau = ( np.exp( np.log(len(self.raw_data)/2)/k )**range(k) )/self.sampling_rate
     
