@@ -86,10 +86,12 @@ class analytical:
 
     #TF for SSO
     def H_th_SSO(self,s):
+        #return self.H_L(s)/self.tau_r    #alper
         return self.H_L(s)/self.tau_r
 
     def H_d_SSO(self,s):
-        return self.H_L(s)/self.tau_r
+        #return self.H_L(s)/self.tau_r #alper
+        return self.H_L(s)/self.H_R(s)/self.tau_r #test
     #Power spectral density***************************************
     def S_y(self,omega, H_th, H_d):
         d_therm=0
